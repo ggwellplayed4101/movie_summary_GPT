@@ -13,7 +13,7 @@ let gameState = {
 // Story data structure - dynamic based on user input
 let story = [];
 
-// API configuration for your AI model
+// API configuration for AI model
 const AI_API_CONFIG = {
   baseUrl: 'http://localhost:8000',
   generateEndpoint: '/generate'
@@ -214,13 +214,13 @@ function processText(text) {
   return processedText;
 }
 
-// Updated function to integrate with your AI model
+// Function to integrate with AI model
 async function generatePlotSummary(movieTitle) {
   try {
-    // Create a prompt for your AI model
+    // Create a prompt for AI model
     const prompt = `"${movieTitle}"`;
     
-    // Call your AI API
+    // Call AI API
     const response = await fetch(`${AI_API_CONFIG.baseUrl}${AI_API_CONFIG.generateEndpoint}`, {
       method: 'POST',
       headers: {
@@ -244,9 +244,6 @@ async function generatePlotSummary(movieTitle) {
     
     // Extract the generated text and clean it up
     let generatedText = data.generated_texts[0];
-    
-    // Remove the original prompt from the response if it's included
-    
     
     // Clean up the response - take only the plot summary part
     const lines = generatedText.split('\n').filter(line => line.trim());
@@ -353,7 +350,7 @@ async function displayStep(stepIndex) {
     // Remove AI indicator
     chatContainer.removeChild(aiIndicator);
 
-    // Generate plot summary using your AI model
+    // Generate plot summary using AI model
     const movieTitle = gameState.movieTitles[step.movieIndex];
     const plotSummary = await generatePlotSummary(movieTitle);
 
@@ -509,11 +506,10 @@ function continueAutoplay() {
   }
 
   displayStep(gameState.currentStep).then(() => {
-    // Check if the step we just displayed needs input
+    // Check if the step just displayed needs input
     const currentStep = story[gameState.currentStep - 1];
     
     if (currentStep && currentStep.needsInput) {
-      // Don't stop yet - continue to show the input prompt
       // The input prompt display will handle stopping autoplay
       return;
     }
