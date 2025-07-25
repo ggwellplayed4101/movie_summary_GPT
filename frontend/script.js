@@ -218,7 +218,7 @@ function processText(text) {
 async function generatePlotSummary(movieTitle) {
   try {
     // Create a prompt for your AI model
-    const prompt = `Create a compelling movie plot summary for "${movieTitle}". The summary should be 2-3 sentences long and sound like something a movie buff would say. Make it engaging and believable:`;
+    const prompt = `"${movieTitle}"`;
     
     // Call your AI API
     const response = await fetch(`${AI_API_CONFIG.baseUrl}${AI_API_CONFIG.generateEndpoint}`, {
@@ -246,7 +246,7 @@ async function generatePlotSummary(movieTitle) {
     let generatedText = data.generated_texts[0];
     
     // Remove the original prompt from the response if it's included
-    generatedText = generatedText.replace(prompt, '').trim();
+    
     
     // Clean up the response - take only the plot summary part
     const lines = generatedText.split('\n').filter(line => line.trim());
@@ -366,7 +366,7 @@ async function displayStep(stepIndex) {
     // Scroll to show plot summary
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    await typeMessage(messageText, `Well, "${movieTitle}" is... *clears throat nervously* ${plotSummary}`);
+    await typeMessage(messageText, `Well, "${movieTitle}"'s *clears throat nervously* plot goes like this. ${plotSummary}`);
     
     // Final scroll after typing
     chatContainer.scrollTop = chatContainer.scrollHeight;
