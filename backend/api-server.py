@@ -18,18 +18,18 @@ app = FastAPI(title="GPT Model API", description="API for text generation using 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Configuration
 MODEL_CONFIG = {
-    'out_dir': 'out-shows',  # Default model directory
-    'device': 'cpu',  # Default to CPU, change to 'cuda' if you have GPU
-    'dtype': 'float32',  # Use float32 for CPU
-    'compile': False
+    'out_dir': os.getenv('MODEL_DIR', 'out-shows'),  # Can be overridden via env var
+    'device': os.getenv('DEVICE', 'cpu'),  # Railway free tier is CPU, but flexible
+    'dtype': os.getenv('DTYPE', 'float32'),  # Good for CPU
+    'compile': os.getenv('COMPILE', 'False').lower() == 'true'  # False by default, safer for deployment
 }
 
 # Global model variables
@@ -198,4 +198,5 @@ async def get_model_info():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
