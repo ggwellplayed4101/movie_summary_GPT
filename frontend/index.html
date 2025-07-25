@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Night Story</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .welcome-screen h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+        }
+
+        .welcome-screen .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .character-setup {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            min-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffd93d;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ffd93d;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #1a1a2e;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Story Screen */
+        .story-screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 2px solid rgba(255, 217, 61, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .story-title {
+            font-size: 1.8rem;
+            color: #ffd93d;
+            font-weight: bold;
+        }
+
+        .movie-counter {
+            color: #6bcf7f;
+            font-size: 1rem;
+            margin-left: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd93d;
+            transform: translateY(-1px);
+        }
+
+        .control-btn.active {
+            background: #ffd93d;
+            color: #1a1a2e;
+            border-color: #ffd93d;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+            max-height: 65vh;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .scene-description {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 217, 61, 0.15));
+            border-left: 4px solid #ff6b6b;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0 15px 15px 0;
+            font-style: italic;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .message {
+            margin-bottom: 2rem;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .speaker {
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .speaker.user {
+            background: linear-gradient(45deg, #6bcf7f, #4ecdc4);
+            color: #1a1a2e;
+        }
+
+        .speaker.friend {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+
+        .speaker.narrator {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .message-text {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1.2rem 1.8rem;
+            border-radius: 18px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .plot-summary {
+            background: linear-gradient(135deg, rgba(107, 207, 127, 0.15), rgba(78, 205, 196, 0.15));
+            border-left: 4px solid #6bcf7f;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 15px 15px 0;
+            font-style: italic;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .plot-summary strong {
+            color: #6bcf7f;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #ffd93d;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+        }
+
+        /* User Input */
+        .user-input-container {
+            background: rgba(255, 217, 61, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid #ffd93d;
+            animation: pulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.1);
+        }
+
+        .input-prompt {
+            color: #ffd93d;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .user-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            resize: vertical;
+            min-height: 70px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .user-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd93d;
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.2);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #6bcf7f, #4ecdc4);
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107, 207, 127, 0.3);
+        }
+
+        .ai-indicator {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            animation: aiPulse 1.5s infinite;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        @keyframes aiPulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 8px 25px rgba(155, 89, 182, 0.5);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { border-color: #ffd93d; box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.4); }
+            50% { border-color: #6bcf7f; box-shadow: 0 0 0 10px rgba(255, 217, 61, 0); }
+            100% { border-color: #ffd93d; box-shadow: 0 0 0 0 rgba(255, 217, 61, 0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .welcome-screen h1 {
+                font-size: 2.2rem;
+            }
+            
+            .character-setup {
+                min-width: auto;
+                width: 100%;
+                padding: 2rem;
+            }
+            
+            .chat-container {
+                max-height: 55vh;
+                padding: 1.5rem;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .control-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>🎬 Movie Night Story</h1>
+            <p class="subtitle">An interactive conversation about your favorite films</p>
+            <div class="character-setup">
+                <div class="input-group">
+                    <label for="userName">Your Name:</label>
+                    <input type="text" id="userName" placeholder="Enter your name" required>
+                </div>
+                <div class="input-group">
+                    <label for="friendName">Your Movie-Loving Friend:</label>
+                    <input type="text" id="friendName" placeholder="Enter your friend's name" required>
+                </div>
+                <button class="start-btn" onclick="startStory()">🎬 Start Movie Night</button>
+            </div>
+        </div>
+
+        <!-- Story Screen -->
+        <div class="story-screen" id="storyScreen">
+            <div class="story-header">
+                <div>
+                    <div class="story-title">Movie Night Conversation</div>
+                    <div class="movie-counter" id="movieCounter">Movies Discussed: 0/3</div>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="playPauseBtn" onclick="toggleAutoplay()">▶ Play</button>
+                    <button class="control-btn" onclick="nextStep()">➡ Next</button>
+                    <button class="control-btn" onclick="resetStory()">🔁 Start Over</button>
+                </div>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <!-- Story content will be dynamically added here -->
+            </div>
+
+            <div class="user-input-container" id="userInputContainer" style="display: none;">
+                <div class="input-prompt" id="inputPrompt">Your response:</div>
+                <input type="text" class="user-input" id="userInput" placeholder="Type your response...">
+                <button class="submit-btn" onclick="submitUserInput()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            characters: {},
+            currentStep: 0,
+            isPlaying: false,
+            isTyping: false,
+            userResponses: {},
+            moviesDiscussed: 0,
+            movieTitles: [],
+            typingSpeed: 30
+        };
+
+        // Story data structure - dynamic based on user input
+        let story = [];
+
+        function generateStory() {
+            story = [
+                {
+                    speaker: 'narrator',
+                    text: 'Movie night is over. You\'re putting on your jacket, ready to leave.',
+                    scene: 'Living room after movie night - dim lighting, empty popcorn bowls, that cozy post-movie atmosphere',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Hey {userName}, before you go...',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'I heard from Sarah that you\'re like, this huge movie buff!',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'Your stomach drops. Movie buff? You barely watch anything...',
+                    needsInput: false
+                },
+                {
+                    speaker: 'user',
+                    text: 'Oh, um... I mean, I don\'t really watch that many—',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Come on, don\'t be modest! She said you have amazing taste.',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'You fidget with your keys. This is awkward.',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'So what\'s a movie you\'d totally recommend?',
+                    needsInput: true,
+                    inputPrompt: 'Quick! Name any movie:',
+                    inputType: 'movie'
+                },
+                {
+                    speaker: 'user',
+                    text: '{movie1}',
+                    needsInput: false,
+                    isMovieTitle: true
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Oh interesting! What\'s it about?',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'Panic mode. You have no idea...',
+                    needsInput: false
+                },
+                {
+                    speaker: 'user',
+                    text: 'AI_PLOT_SUMMARY_1',
+                    needsInput: false,
+                    isPlotSummary: true,
+                    movieIndex: 0
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Wow, that sounds incredible!',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Give me another one!',
+                    needsInput: true,
+                    inputPrompt: 'Another movie (you\'re sweating):',
+                    inputType: 'movie'
+                },
+                {
+                    speaker: 'user',
+                    text: '{movie2}',
+                    needsInput: false,
+                    isMovieTitle: true
+                },
+                {
+                    speaker: 'friend',
+                    text: 'Never heard of it. Plot?',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'Your palms are sweaty. Think, think...',
+                    needsInput: false
+                },
+                {
+                    speaker: 'user',
+                    text: 'AI_PLOT_SUMMARY_2',
+                    needsInput: false,
+                    isPlotSummary: true,
+                    movieIndex: 1
+                },
+                {
+                    speaker: 'friend',
+                    text: 'You really do know your stuff!',
+                    needsInput: false
+                },
+                {
+                    speaker: 'friend',
+                    text: 'One more - blow my mind!',
+                    needsInput: true,
+                    inputPrompt: 'Final movie (reputation on the line):',
+                    inputType: 'movie'
+                },
+                {
+                    speaker: 'user',
+                    text: '{movie3}',
+                    needsInput: false,
+                    isMovieTitle: true
+                },
+                {
+                    speaker: 'friend',
+                    text: 'And this one?',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'Last chance to sound convincing...',
+                    needsInput: false
+                },
+                {
+                    speaker: 'user',
+                    text: 'AI_PLOT_SUMMARY_3',
+                    needsInput: false,
+                    isPlotSummary: true,
+                    movieIndex: 2
+                },
+                {
+                    speaker: 'friend',
+                    text: '{userName}, you\'re amazing! Sarah was totally right.',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'You smile nervously and head for the door.',
+                    needsInput: false
+                },
+                {
+                    speaker: 'narrator',
+                    text: 'Somehow, you pulled it off...',
+                    needsInput: false,
+                    specialActions: ['showCompletionMessage']
+                }
+            ];
+        }
+
+        function startStory() {
+            const userName = document.getElementById('userName').value.trim();
+            const friendName = document.getElementById('friendName').value.trim();
+
+            if (!userName || !friendName) {
+                alert('Please enter both names to begin the movie night story!');
+                return;
+            }
+
+            gameState.characters = { userName, friendName };
+            generateStory();
+            
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('storyScreen').style.display = 'flex';
+            
+            setTimeout(() => {
+                startAutoplay();
+            }, 500);
+        }
+
+        function processText(text) {
+            let processedText = text;
+            
+            // Replace character names
+            Object.keys(gameState.characters).forEach(key => {
+                const placeholder = `{${key}}`;
+                processedText = processedText.replace(new RegExp(placeholder, 'g'), gameState.characters[key]);
+            });
+            
+            // Replace movie titles
+            gameState.movieTitles.forEach((title, index) => {
+                const placeholder = `{movie${index + 1}}`;
+                processedText = processedText.replace(new RegExp(placeholder, 'g'), title);
+            });
+            
+            return processedText;
+        }
+
+        // Simulate AI plot generation (in real implementation, this would call your trained model)
+        function generatePlotSummary(movieTitle) {
+            // This is where you would integrate with your trained AI model
+            // For demo purposes, using simulated responses
+            const plotSummaries = {
+                'inception': 'A mind-bending thriller where a skilled thief who infiltrates people\'s dreams is given the impossible task of planting an idea instead of stealing one. The film explores multiple layers of reality as the team navigates through dreams within dreams, questioning what\'s real and what\'s fabricated.',
+                'the matrix': 'A computer hacker discovers that reality as he knows it is actually a simulated world controlled by machines. He joins a rebellion to fight against the artificial intelligence that has enslaved humanity, learning to bend the rules of the matrix to save mankind.',
+                'interstellar': 'In a future where Earth is dying, a former NASA pilot leads a secret mission through a wormhole near Saturn to find humanity a new home. The film combines hard science fiction with emotional storytelling as he races against time while experiencing the effects of relativity.',
+                'default': `An engaging story that follows compelling characters through unexpected twists and turns. The film explores themes of ${getRandomThemes()} while delivering ${getRandomGenre()} elements that keep viewers captivated from beginning to end.`
+            };
+
+            const key = movieTitle.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+            return plotSummaries[key] || plotSummaries['default'];
+        }
+
+        function getRandomThemes() {
+            const themes = ['love and loss', 'redemption and hope', 'friendship and betrayal', 'good versus evil', 'coming of age', 'sacrifice and heroism'];
+            return themes[Math.floor(Math.random() * themes.length)];
+        }
+
+        function getRandomGenre() {
+            const genres = ['dramatic', 'thrilling', 'comedic', 'action-packed', 'mysterious', 'romantic'];
+            return genres[Math.floor(Math.random() * genres.length)];
+        }
+
+        async function displayStep(stepIndex) {
+            if (stepIndex >= story.length) return;
+
+            const step = story[stepIndex];
+            const chatContainer = document.getElementById('chatContainer');
+
+            // Add scene description if present
+            if (step.scene && stepIndex === 0) {
+                const sceneDiv = document.createElement('div');
+                sceneDiv.className = 'scene-description';
+                sceneDiv.textContent = step.scene;
+                chatContainer.appendChild(sceneDiv);
+            }
+
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+
+            const messageHeader = document.createElement('div');
+            messageHeader.className = 'message-header';
+
+            const speakerSpan = document.createElement('span');
+            speakerSpan.className = `speaker ${step.speaker}`;
+            speakerSpan.textContent = step.speaker === 'user' ? gameState.characters.userName : 
+                                    step.speaker === 'friend' ? gameState.characters.friendName : 
+                                    'Narrator';
+
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+
+            messageHeader.appendChild(speakerSpan);
+            messageDiv.appendChild(messageHeader);
+            messageDiv.appendChild(messageText);
+            chatContainer.appendChild(messageDiv);
+
+            // Handle special message types
+            if (step.isPlotSummary) {
+                // Scroll to bottom first
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // Add AI indicator
+                const aiIndicator = document.createElement('div');
+                aiIndicator.className = 'ai-indicator';
+                aiIndicator.textContent = '🤖 AI Generating Plot Summary...';
+                chatContainer.appendChild(aiIndicator);
+                
+                // Scroll to show AI indicator
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // Simulate AI processing time with progress
+                for (let i = 0; i < 3; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    aiIndicator.textContent += ' ●';
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+
+                // Remove AI indicator
+                chatContainer.removeChild(aiIndicator);
+
+                // Generate plot summary
+                const movieTitle = gameState.movieTitles[step.movieIndex];
+                const plotSummary = generatePlotSummary(movieTitle);
+
+                // Create plot summary element
+                const plotDiv = document.createElement('div');
+                plotDiv.className = 'plot-summary';
+                plotDiv.innerHTML = `<strong>📽️ "${movieTitle}" Plot Summary:</strong>${plotSummary}`;
+                messageText.appendChild(plotDiv);
+
+                // Scroll to show plot summary
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                await typeMessage(messageText, `Well, "${movieTitle}" is... *clears throat nervously* ${plotSummary}`);
+                
+                // Final scroll after typing
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } else {
+                // Type the message
+                await typeMessage(messageText, processText(step.text));
+            }
+
+            // Scroll to bottom after message is complete
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Increment step counter
+            gameState.currentStep++;
+
+            // Handle user input - this will stop autoplay AFTER showing the prompt
+            if (step.needsInput) {
+                showUserInput(step.inputPrompt || 'Your response:', step.inputType);
+                // Stop autoplay after showing input prompt
+                gameState.isPlaying = false;
+                updatePlayButton();
+            } else if (step.specialActions) {
+                handleSpecialActions(step.specialActions);
+            }
+        }
+
+        async function typeMessage(element, text) {
+            gameState.isTyping = true;
+            element.innerHTML = element.innerHTML || '';
+
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            element.appendChild(cursor);
+
+            for (let i = 0; i < text.length; i++) {
+                if (!gameState.isTyping) break;
+                
+                element.insertBefore(document.createTextNode(text[i]), cursor);
+                await new Promise(resolve => setTimeout(resolve, gameState.typingSpeed));
+                
+                // Scroll during typing to keep content visible
+                const chatContainer = document.getElementById('chatContainer');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            if (cursor.parentNode) {
+                element.removeChild(cursor);
+            }
+            gameState.isTyping = false;
+            
+            // Final scroll after typing completes
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showUserInput(prompt, inputType = 'text') {
+            const container = document.getElementById('userInputContainer');
+            const promptElement = document.getElementById('inputPrompt');
+            const inputElement = document.getElementById('userInput');
+
+            promptElement.textContent = prompt;
+            inputElement.value = '';
+            inputElement.placeholder = inputType === 'movie' ? 'Enter a movie title...' : 'Type your response...';
+            container.style.display = 'block';
+            inputElement.focus();
+
+            // Scroll to bottom
+            setTimeout(() => {
+                document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+            }, 100);
+        }
+
+        function submitUserInput() {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) {
+                alert('Please enter your response!');
+                return;
+            }
+
+            const currentStep = story[gameState.currentStep - 1];
+            
+            // Store movie titles
+            if (currentStep && currentStep.inputType === 'movie') {
+                gameState.movieTitles.push(input);
+                gameState.moviesDiscussed++;
+                updateMovieCounter();
+            }
+
+            // Store user response
+            gameState.userResponses[`response${gameState.currentStep}`] = input;
+
+            // Hide input container
+            document.getElementById('userInputContainer').style.display = 'none';
+
+            // Auto-resume play if user was playing before
+            gameState.isPlaying = true;
+            updatePlayButton();
+            
+            setTimeout(() => {
+                continueAutoplay();
+            }, 1000);
+        }
+
+        function updateMovieCounter() {
+            const counterElement = document.getElementById('movieCounter');
+            if (counterElement) {
+                counterElement.textContent = `Movies Discussed: ${gameState.moviesDiscussed}/3`;
+            }
+        }
+
+        function handleSpecialActions(actions) {
+            actions.forEach(action => {
+                if (action === 'showCompletionMessage') {
+                    setTimeout(() => {
+                        const chatContainer = document.getElementById('chatContainer');
+                        const completionDiv = document.createElement('div');
+                        completionDiv.className = 'scene-description';
+                        completionDiv.innerHTML = '<strong>🎭 Crisis Averted!</strong><br>Your secret is safe... for now. All thanks to the movie plot AI trained by you! 🤖✨';
+                        chatContainer.appendChild(completionDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        gameState.isPlaying = false;
+                        updatePlayButton();
+                    }, 2000);
+                }
+            });
+        }
+
+        function toggleAutoplay() {
+            gameState.isPlaying = !gameState.isPlaying;
+            updatePlayButton();
+
+            if (gameState.isPlaying) {
+                continueAutoplay();
+            }
+        }
+
+        function continueAutoplay() {
+            if (!gameState.isPlaying || gameState.currentStep >= story.length) {
+                return;
+            }
+
+            displayStep(gameState.currentStep).then(() => {
+                // Check if the step we just displayed needs input
+                const currentStep = story[gameState.currentStep - 1];
+                
+                if (currentStep && currentStep.needsInput) {
+                    // Don't stop yet - continue to show the input prompt
+                    // The input prompt display will handle stopping autoplay
+                    return;
+                }
+
+                if (gameState.isPlaying && gameState.currentStep < story.length) {
+                    // Wait 2 seconds after typing completes, then continue
+                    setTimeout(() => {
+                        continueAutoplay();
+                    }, 2000);
+                }
+            });
+        }
+
+        function startAutoplay() {
+            gameState.isPlaying = true;
+            updatePlayButton();
+            continueAutoplay();
+        }
+
+        function updatePlayButton() {
+            const btn = document.getElementById('playPauseBtn');
+            if (btn) {
+                btn.textContent = gameState.isPlaying ? '⏸ Pause' : '▶ Play';
+                btn.classList.toggle('active', gameState.isPlaying);
+            }
+        }
+
+        function nextStep() {
+            if (gameState.currentStep < story.length && !gameState.isTyping) {
+                const currentStep = story[gameState.currentStep - 1];
+                if (currentStep && currentStep.needsInput && document.getElementById('userInputContainer').style.display !== 'none') {
+                    return;
+                }
+                
+                displayStep(gameState.currentStep);
+            }
+        }
+
+        // Test function to ensure resetStory is accessible
+        window.resetStory = function() {
+            console.log('Reset button clicked!');
+            
+            const confirmReset = confirm('Are you sure you want to restart the movie night story? All progress will be lost.');
+            console.log('Confirm result:', confirmReset);
+            
+            if (confirmReset) {
+                console.log('User confirmed reset, starting reset process...');
+                
+                // Stop any ongoing typing or animations
+                gameState.isTyping = false;
+                
+                // Complete reset of game state
+                gameState = {
+                    characters: {},
+                    currentStep: 0,
+                    isPlaying: false,
+                    isTyping: false,
+                    userResponses: {},
+                    moviesDiscussed: 0,
+                    movieTitles: [],
+                    typingSpeed: 30
+                };
+
+                // Clear story data
+                story = [];
+                console.log('Game state and story cleared');
+                
+                // Get DOM elements
+                const storyScreen = document.getElementById('storyScreen');
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                const chatContainer = document.getElementById('chatContainer');
+                const userInputContainer = document.getElementById('userInputContainer');
+                const userName = document.getElementById('userName');
+                const friendName = document.getElementById('friendName');
+                
+                console.log('DOM elements found:', {
+                    storyScreen: !!storyScreen,
+                    welcomeScreen: !!welcomeScreen,
+                    chatContainer: !!chatContainer,
+                    userInputContainer: !!userInputContainer,
+                    userName: !!userName,
+                    friendName: !!friendName
+                });
+                
+                // Force hide story screen
+                if (storyScreen) {
+                    storyScreen.style.display = 'none';
+                    storyScreen.style.visibility = 'hidden';
+                    console.log('Story screen hidden');
+                }
+                
+                // Force show welcome screen
+                if (welcomeScreen) {
+                    welcomeScreen.style.display = 'flex';
+                    welcomeScreen.style.visibility = 'visible';
+                    console.log('Welcome screen shown');
+                }
+                
+                // Clear chat content
+                if (chatContainer) {
+                    chatContainer.innerHTML = '';
+                    console.log('Chat cleared');
+                }
+                
+                // Hide user input
+                if (userInputContainer) {
+                    userInputContainer.style.display = 'none';
+                }
+                
+                // Clear input fields
+                if (userName) {
+                    userName.value = '';
+                    console.log('Username cleared');
+                }
+                if (friendName) {
+                    friendName.value = '';
+                    console.log('Friend name cleared');
+                }
+                
+                // Reset UI controls
+                try {
+                    updatePlayButton();
+                    updateMovieCounter();
+                    console.log('UI controls updated');
+                } catch (error) {
+                    console.log('Error updating UI controls:', error);
+                }
+                
+                console.log('Story reset complete - should be back at welcome screen');
+                
+                // Double check the display states
+                setTimeout(() => {
+                    console.log('Final check - Welcome screen display:', welcomeScreen ? welcomeScreen.style.display : 'not found');
+                    console.log('Final check - Story screen display:', storyScreen ? storyScreen.style.display : 'not found');
+                }, 100);
+                
+            } else {
+                console.log('User cancelled reset');
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea') {
+                return;
+            }
+
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleAutoplay();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextStep();
+                    break;
+                case 'Escape':
+                    gameState.isTyping = false;
+                    break;
+            }
+        });
+
+        // Handle Enter key in user input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('userInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitUserInput();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
