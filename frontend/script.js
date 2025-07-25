@@ -15,7 +15,7 @@ let story = [];
 
 // API configuration for AI model
 const AI_API_CONFIG = {
-  baseUrl: 'http://localhost:8000',
+  baseUrl: 'https://movie-summary-gpt.onrender.com',
   generateEndpoint: '/generate'
 };
 
