@@ -24,9 +24,9 @@ The app simulates this awkward conversation where you must:
 
 ## 📁 Project Structure
 
-```
+````
 movie_night/
-├── frontend/                 # Interactive web application
+├── frontend/                # Interactive web application
 │   ├── index.html           # Main HTML structure
 │   ├── styles.css           # Responsive CSS styling
 │   └── script.js            # Game logic + AI integration
@@ -36,16 +36,11 @@ movie_night/
 │   ├── sample.py            # Text generation
 │   ├── api_server.py        # Flask API server
 │   ├── start_api.py         # API startup script
+│   ├── data/shows/          # Training dataset
+│   │   ├── input.txt        # Movie/TV show plots (360MB+)
+│   │   └── prepare.py       # Data preprocessing
 │   └── out-shows/
-│       └── ckpt.pt          # Trained model (230MB, 19.17M params)
-├── data/shows/              # Training dataset
-│   ├── input.txt           # Movie/TV show plots (360MB+)
-│   └── prepare.py          # Data preprocessing
-└── deploy/                 # Deployment guides
-    ├── netlify-deploy.md
-    ├── vercel-deploy.md
-    └── backend-deploy.md
-```
+│       └── ckpt.pt           # Trained model (230MB, 19.17M params)
 
 ## 🔥 Technical Highlights
 
@@ -80,7 +75,7 @@ movie_night/
 cd frontend
 # Double-click index.html or use a local server
 python -m http.server 8080
-```
+````
 
 ### 2. Full Stack with AI
 
@@ -92,7 +87,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # Start AI API server
-python start_api.py
+python ./api-server.py
 
 # Frontend (in new terminal)
 cd frontend
@@ -120,8 +115,8 @@ The GPT model was trained specifically on movie and TV show plot data:
 
 ```bash
 # Prepare training data
-cd data/shows
-python prepare.py
+cd ./backend/
+python python train.py config/train_shows.py --device={cpu, cuda, mps, etc} --compile=False --eval_iters=20 --log_interval=1 --block_size=128 --batch_size=32 --n_layer=8 --n_head=8 --n_embd=256 --max_iters=2000 --lr_decay_iters=2000 --dropout=0.0
 
 # Train the model (took ~2 hours on GPU)
 cd ../../backend
@@ -133,29 +128,6 @@ python train.py config/train_shows.py
 # Final checkpoint: 230MB
 ```
 
-## 🌐 Deployment Options
-
-### Quick Deploy (Frontend Only)
-
-1. **Netlify**: Drag & drop `frontend/` folder → Instant live demo
-2. **Vercel**: Connect GitHub repo → Auto-deploy
-3. **GitHub Pages**: Enable in repo settings
-
-### Full Stack Deploy
-
-1. **Frontend**: Netlify/Vercel (free)
-2. **Backend**: Railway/Render/Hugging Face Spaces
-3. **Alternative**: Single server with Nginx
-
-See detailed guides in `/deploy/` folder.
-
-## 📊 Performance Metrics
-
-- **Model Inference**: ~500ms per plot generation
-- **Frontend Load**: <2MB total assets
-- **API Response**: JSON with fallback handling
-- **Mobile Friendly**: Responsive down to 320px width
-
 ## 🔧 API Endpoints
 
 ### Generate Plot Summary
@@ -165,7 +137,7 @@ POST http://localhost:8000/generate
 Content-Type: application/json
 
 {
-  "start": "Movie Title",
+  "start": "{Movie Title}",
   "max_new_tokens": 150,
   "temperature": 0.8,
   "top_k": 200,
@@ -255,12 +227,18 @@ python start_api.py --debug
 
 ## 📝 License
 
-MIT License - Feel free to use this project as inspiration for your own AI-powered interactive stories!
+This project is released under the **Creative Commons BY-SA license** to comply with the CMU Movie Summary Corpus licensing requirements.
+
+- You are free to use, modify, and distribute this project
+- You must provide attribution to both this project and the original CMU Movie Summary Corpus
+- Any derivative works must be shared under the same CC BY-SA license
+
+For more details, see the original dataset license at: http://www.cs.cmu.edu/~dbamman/movies/
 
 ## 🙏 Acknowledgments
 
 - **nanoGPT**: Built on Andrej Karpathy's excellent transformer implementation
-- **Training Data**: Movie plot summaries from various public sources
+- **Training Data**: This project uses the **CMU Movie Summary Corpus** by David Bamman, Brendan O'Connor, and Noah A. Smith, released under the Creative Commons BY-SA license. Original dataset available at: https://www.cs.cmu.edu/~ark/personas/
 - **Design Inspiration**: Modern web app UX patterns
 - **Community**: OpenAI GPT research and PyTorch ecosystem
 
