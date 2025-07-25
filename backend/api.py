@@ -11,6 +11,41 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import GPTConfig, GPT
+import requests
+
+def download_model():
+    model_path = "out-shows/ckpt.pt"
+    
+    if not os.path.exists(model_path):
+        print("Downloading model checkpoint from Google Drive...")
+        
+        file_id = "1_Hf7XYgfFfqAYUb4Rm5vJ9t9Eh47sJkV"
+        os.makedirs("out-shows", exist_ok=True)
+        
+        download_large_file_from_google_drive(file_id, model_path)
+        print("Model downloaded successfully!")
+    else:
+        print("Model checkpoint already exists.")
+
+def download_large_file_from_google_drive(file_id, destination):
+    URL = "https://docs.google.com/uc?export=download"
+    
+    session = requests.Session()
+    response = session.get(URL, params={'id': file_id}, stream=True)
+    
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            params = {'id': file_id, 'confirm': value}
+            response = session.get(URL, params=params, stream=True)
+            break
+    
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(chunk_size=32768):
+            if chunk:
+                f.write(chunk)
+
+# CALL IT IMMEDIATELY
+download_model()
 
 # Initialize FastAPI app
 app = FastAPI(title="GPT Model API", description="API for text generation using trained GPT model")
