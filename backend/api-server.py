@@ -8,11 +8,21 @@ from typing import Optional, List
 import torch
 import tiktoken
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import GPTConfig, GPT
 
 # Initialize FastAPI app
 app = FastAPI(title="GPT Model API", description="API for text generation using trained GPT model")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Configuration
 MODEL_CONFIG = {

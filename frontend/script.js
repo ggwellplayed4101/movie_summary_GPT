@@ -13,6 +13,12 @@ let gameState = {
 // Story data structure - dynamic based on user input
 let story = [];
 
+// API configuration for your AI model
+const AI_API_CONFIG = {
+  baseUrl: 'http://localhost:8000',
+  generateEndpoint: '/generate'
+};
+
 function generateStory() {
   story = [
     {
@@ -208,10 +214,65 @@ function processText(text) {
   return processedText;
 }
 
-// Simulate AI plot generation (in real implementation, this would call your trained model)
-function generatePlotSummary(movieTitle) {
-  // This is where you would integrate with your trained AI model
-  // For demo purposes, using simulated responses
+// Updated function to integrate with your AI model
+async function generatePlotSummary(movieTitle) {
+  try {
+    // Create a prompt for your AI model
+    const prompt = `Create a compelling movie plot summary for "${movieTitle}". The summary should be 2-3 sentences long and sound like something a movie buff would say. Make it engaging and believable:`;
+    
+    // Call your AI API
+    const response = await fetch(`${AI_API_CONFIG.baseUrl}${AI_API_CONFIG.generateEndpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        start: prompt,
+        max_new_tokens: 150,
+        temperature: 0.8,
+        top_k: 200,
+        num_samples: 1,
+        seed: Math.floor(Math.random() * 10000) // Random seed for variety
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Extract the generated text and clean it up
+    let generatedText = data.generated_texts[0];
+    
+    // Remove the original prompt from the response if it's included
+    generatedText = generatedText.replace(prompt, '').trim();
+    
+    // Clean up the response - take only the plot summary part
+    const lines = generatedText.split('\n').filter(line => line.trim());
+    let plotSummary = lines[0] || generatedText;
+    
+    // Ensure it's not too long
+    if (plotSummary.length > 300) {
+      plotSummary = plotSummary.substring(0, 300) + '...';
+    }
+    
+    // If the AI response is too short or seems incomplete, use fallback
+    if (plotSummary.length < 50) {
+      return getFallbackPlotSummary(movieTitle);
+    }
+    
+    return plotSummary;
+    
+  } catch (error) {
+    console.error('Error generating plot with AI:', error);
+    // Fallback to original logic if API fails
+    return getFallbackPlotSummary(movieTitle);
+  }
+}
+
+// Fallback function (your original logic) if AI fails
+function getFallbackPlotSummary(movieTitle) {
   const plotSummaries = {
     'inception': 'A mind-bending thriller where a skilled thief who infiltrates people\'s dreams is given the impossible task of planting an idea instead of stealing one. The film explores multiple layers of reality as the team navigates through dreams within dreams, questioning what\'s real and what\'s fabricated.',
     'the matrix': 'A computer hacker discovers that reality as he knows it is actually a simulated world controlled by machines. He joins a rebellion to fight against the artificial intelligence that has enslaved humanity, learning to bend the rules of the matrix to save mankind.',
@@ -292,9 +353,9 @@ async function displayStep(stepIndex) {
     // Remove AI indicator
     chatContainer.removeChild(aiIndicator);
 
-    // Generate plot summary
+    // Generate plot summary using your AI model
     const movieTitle = gameState.movieTitles[step.movieIndex];
-    const plotSummary = generatePlotSummary(movieTitle);
+    const plotSummary = await generatePlotSummary(movieTitle);
 
     // Create plot summary element
     const plotDiv = document.createElement('div');
