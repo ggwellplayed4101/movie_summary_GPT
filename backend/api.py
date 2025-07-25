@@ -33,16 +33,28 @@ def download_large_file_from_google_drive(file_id, destination):
     session = requests.Session()
     response = session.get(URL, params={'id': file_id}, stream=True)
     
+    # Handle virus scan warning for large files (>25MB)
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             params = {'id': file_id, 'confirm': value}
             response = session.get(URL, params=params, stream=True)
             break
     
+    # DEBUG: Check what we're downloading
+    content_start = response.content[:100]  # First 100 bytes
+    print(f"Download content starts with: {content_start}")
+    
+    if content_start.startswith(b'<'):
+        print("ERROR: Downloaded HTML instead of model file!")
+        print("This usually means Google Drive quota exceeded or sharing issue")
+        return False
+    
+    # Download in chunks
     with open(destination, "wb") as f:
         for chunk in response.iter_content(chunk_size=32768):
             if chunk:
                 f.write(chunk)
+    return True
 
 # CALL IT IMMEDIATELY
 download_model()
