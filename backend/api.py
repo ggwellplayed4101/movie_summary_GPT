@@ -19,10 +19,18 @@ def download_model():
     if not os.path.exists(model_path):
         print("Downloading model checkpoint from Google Drive...")
         
-        file_id = "1_Hf7XYgfFfqAYUb4Rm5vJ9t9Eh47sJkV"
+        # Direct download URL (bypass virus scan)
+        direct_url = "https://drive.google.com/uc?id=1_Hf7XYgfFfqAYUb4Rm5vJ9t9Eh47sJkV&export=download&confirm=t"
+        
         os.makedirs("out-shows", exist_ok=True)
         
-        download_large_file_from_google_drive(file_id, model_path)
+        response = requests.get(direct_url, stream=True)
+        
+        with open(model_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=32768):
+                if chunk:
+                    f.write(chunk)
+        
         print("Model downloaded successfully!")
     else:
         print("Model checkpoint already exists.")
