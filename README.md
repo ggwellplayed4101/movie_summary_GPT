@@ -14,13 +14,18 @@ The app simulates this awkward conversation where you must:
 2. **Explain their plots** convincingly
 3. **Save face** using AI-generated plot summaries
 
-## 🚀 Live Demo Features
+## 🛠️ How We Built It
 
-- **Interactive Storytelling**: Realistic conversation flow with branching dialogue
-- **AI Plot Generation**: Custom-trained GPT model creates movie plot summaries
-- **Real-time Typing**: Typewriter effect for immersive conversation
-- **Responsive Design**: Works on desktop and mobile
-- **Smart Fallbacks**: Graceful handling when AI API is unavailable
+- **Data**: Trained on the [CMU Movie Summary Corpus](https://www.cs.cmu.edu/~ark/personas/) (~42k movie plots, 360MB), licensed under CC BY-SA  
+- **Model**: Custom **nanoGPT** (8 layers, 8 heads, 256 embedding size, ~19M parameters)  
+- **Training**: ~2 hours on GPU, loss converged to ~1.8, final checkpoint ~230MB  
+- **Integration**: Backend serves AI completions; React frontend simulates the social scenario with dialogue, pacing, and effects  
+
+👉 End result: a custom AI movie buff that invents convincing plots on demand.
+
+## 🎬 Demo
+
+![App Demo](./assets/demo.gif)
 
 ## 🎮 How to Play
 
