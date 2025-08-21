@@ -26,6 +26,7 @@ The app simulates this awkward conversation where you must:
 ## 🎬 Demo
 
 ![App Demo](./assets/demo.gif)
+Watch full video on YouTube [https://youtu.be/9wqO9jli4SI?si=2og5iWUt3-IRPrVB](url)!!
 
 ## 🎮 How to Play
 
